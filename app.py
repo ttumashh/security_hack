@@ -4,11 +4,13 @@ import requests
 from fake_useragent import UserAgent
 from xml.etree import ElementTree as ET
 from bs4 import BeautifulSoup
+from flask_cors import CORS
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:adil@localhost:5432/exploits'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
+CORS(app)
 db = SQLAlchemy(app)
 
 class Exploit(db.Model):
@@ -60,7 +62,7 @@ def scan():
     return 'success', 200
 
 
-@app.route('/api/v1/vulnerabilities')
+@app.route('/api/v1/vulnerabilities', methods=['GET'])
 def vulnerabilities():
     last_10_exploits = Exploit.query.order_by(Exploit.date.desc()).limit(10).all()
     result = []
